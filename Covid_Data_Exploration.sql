@@ -71,5 +71,5 @@ ROUND((CAST(vac.people_fully_vaccinated AS numeric)) / dea.population * 100, 4) 
 FROM covid_deaths AS dea
 JOIN covid_vaccinations AS vac
 ON dea.location = vac.location AND dea.date = vac.date
-WHERE dea.continent IS NOT NULL AND dea.location = 'France'
+WHERE dea.continent IS NOT NULL
 ORDER BY dea.location, dea.date;
