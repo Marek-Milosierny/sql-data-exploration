@@ -73,3 +73,22 @@ JOIN covid_vaccinations AS vac
 ON dea.location = vac.location AND dea.date = vac.date
 WHERE dea.continent IS NOT NULL
 ORDER BY dea.location, dea.date;
+
+-- Percentage of people fully vaccinated
+
+WITH population(location, population) AS 
+	(SELECT location, population
+	FROM covid_deaths
+	WHERE continent IS NOT NULL
+	GROUP BY location, population),
+	
+	fully_vaccinated(location, people_fully_vaccinated) AS
+	(SELECT location, MAX(people_fully_vaccinated)
+	FROM covid_vaccinations
+	WHERE continent IS NOT NULL
+	GROUP BY location)
+
+SELECT p.location, p.population, f.people_fully_vaccinated, round(CAST(f.people_fully_vaccinated / p.population * 100 AS numeric), 3) AS full_vaccination_pct
+FROM population AS p JOIN fully_vaccinated AS f ON p.location = f.location
+WHERE f.people_fully_vaccinated > 0
+ORDER BY full_vaccination_pct DESC;
